@@ -13,6 +13,7 @@ import MyAppointments from './pages/MyAppointments'
 import Appointment from './pages/Appointment'
 import Footer from './components/Footer'
 import CheckTumor from './pages/CheckTumor';
+import TeamSection from './pages/OurTeam';
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
         <Route path='/appointment/:docId' element={<Appointment />} />
 
         <Route path='/check-tumor' element={<CheckTumor />} />
+        <Route path='/team' element={<TeamSection />} />
       </Routes>
       <Footer />
     </div>
