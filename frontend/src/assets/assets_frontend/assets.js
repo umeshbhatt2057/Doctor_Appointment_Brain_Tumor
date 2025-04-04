@@ -39,6 +39,7 @@ import Pediatricians from './Pediatricians.svg'
 import swasthyasewa from './swasthasewa.svg'
 import umesh from './umesh.png'
 import neelam from './neelam.png'
+import dinesh from './Dinesh.png'
 
 
 export const assets = {
@@ -60,7 +61,7 @@ export const assets = {
     stripe_logo,
     razorpay_logo,
     swasthyasewa,
-    umesh, neelam
+    umesh, neelam,dinesh
 }
 
 export const specialityData = [

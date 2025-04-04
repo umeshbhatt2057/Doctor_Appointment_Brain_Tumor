@@ -3,6 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Login = () => {
   const { backendUrl, token, setToken } = useContext(AppContext);
@@ -12,6 +13,11 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -73,15 +79,18 @@ const Login = () => {
           />
         </div>
 
-        <div className='w-full'>
+        <div className='w-full relative'>
           <p>Password</p>
           <input
-            className='border border-zinc-300 rounded w-full p-2 mt-1'
-            type='password'
+            className='border border-zinc-300 rounded w-full p-2 mt-1 pr-10'
+            type={showPassword ? 'text' : 'password'}
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             required
           />
+          <span className='absolute right-3 top-9 cursor-pointer text-gray-600' onClick={togglePasswordVisibility}>
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
         </div>
 
         <button type='submit' className='bg-primary text-white w-full py-2 rounded-md text-base' disabled={loading}>
