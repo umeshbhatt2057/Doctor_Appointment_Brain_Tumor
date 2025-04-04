@@ -93,6 +93,10 @@ const Login = () => {
           </span>
         </div>
 
+        <p className='text-primary underline cursor-pointer text-sm mt-1' onClick={() => navigate('/forgot-password')}>
+          Forgot Password?
+        </p>
+
         <button type='submit' className='bg-primary text-white w-full py-2 rounded-md text-base' disabled={loading}>
           {loading ? 'Processing...' : state === 'Sign Up' ? 'Create Account' : 'Login'}
         </button>
