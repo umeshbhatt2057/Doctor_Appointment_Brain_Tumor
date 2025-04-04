@@ -4,28 +4,28 @@ import { assets } from "../assets/assets_frontend/assets";
 const teamMembers = [
   {
     name: "Dinesh Bhatt",
-    role: "QA Engineer",
-    image: assets.umesh,
+    role: "",
+    image: assets.dinesh,
     social: ["facebook", "twitter", "instagram"],
     statement: "Ensuring SwasthyaSewa is reliable, secure, and bug-free is my top priority, making sure patients have a seamless experience."
   },
   {
     name: "Neelam Dhami",
-    role: "Frontend Developer",
+    role: "",
     image: assets.neelam,
     social: ["facebook", "twitter", "instagram"],
     statement: "I focus on building an intuitive interface, allowing users to navigate effortlessly while booking appointments and checking reports."
   },
   {
     name: "Shreya Joshi",
-    role: "UI/UX Designer",
+    role: "",
     image: assets.neelam,
     social: ["facebook", "twitter", "instagram"],
     statement: "My goal is to design an engaging and user-friendly platform that ensures accessibility and ease for all users."
   },
   {
     name: "Umesh Bhatt",
-    role: "Full Stack Developer",
+    role: "CEO",
     image: assets.umesh,
     social: ["facebook", "twitter", "instagram"],
     statement: "Developing SwasthyaSewa has been a fulfilling journey, integrating AI for MRI scans and real-time doctor consultations."
