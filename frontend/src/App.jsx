@@ -14,6 +14,8 @@ import Appointment from './pages/Appointment'
 import Footer from './components/Footer'
 import CheckTumor from './pages/CheckTumor';
 import TeamSection from './pages/OurTeam';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const App = () => {
   return (
@@ -33,6 +35,10 @@ const App = () => {
 
         <Route path='/check-tumor' element={<CheckTumor />} />
         <Route path='/team' element={<TeamSection />} />
+        <Route path='/forgot-password' element={<ForgotPassword/>} />
+        <Route path='/reset-password/:token' element={<ResetPassword/>} />
+
+
       </Routes>
       <Footer />
     </div>
