@@ -29,12 +29,10 @@ const registerUser = async (req, res) => {
       return res.json({ success: false, message: 'enter a strong password' })
     }
 
-    // hashing user password
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
+    
 
     const userData = {
-      name, email, password: hashedPassword
+      name, email, password
     }
 
     const newUser = new userModel(userData)
@@ -50,33 +48,30 @@ const registerUser = async (req, res) => {
 
 }
 
-// API for user login
+// API for user login (without hashing)
 const loginUser = async (req, res) => {
-
   try {
-
-    const { email, password } = req.body
-    const user = await userModel.findOne({ email })
+    const { email, password } = req.body;
+    const user = await userModel.findOne({ email });
 
     if (!user) {
-      return res.json({ success: false, message: 'User does not exist' })
+      return res.json({ success: false, message: 'User does not exist' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password)
-
-    if (isMatch) {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
-      res.json({ success: true, token })
+    // 🔓 Direct plain-text comparison (no hashing)
+    if (password === user.password) {
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      res.json({ success: true, token });
     } else {
-      res.json({ success: false, message: 'Invalid Credentials' })
+      res.json({ success: false, message: 'Invalid Credentials' });
     }
 
   } catch (error) {
-    console.log(error)
-    res.json({ success: false, message: error.message })
+    console.log(error);
+    res.json({ success: false, message: error.message });
   }
+};
 
-}
 
 // API for forgot password
 // Forgot Password
@@ -97,16 +92,16 @@ const forgotPassword = async (req, res) => {
     user.resetPasswordExpire = Date.now() + 3600000; // 1 hour expiry
     await user.save();
 
-    // Nodemailer transporter setup
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+   // Create a transporter with Gmail's SMTP details
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',  // Gmail SMTP host
+  port: 587,  // SMTP port for TLS
+  secure: false,  // TLS is used on port 587, so set secure to false
+  auth: {
+    user: process.env.EMAIL_USER,    // gmail 
+    pass: process.env.EMAIL_PASS,  // Your Gmail password or App Password if 2FA is enabled
+  },
+});
 
     const mailOptions = {
       to: user.email,
@@ -130,7 +125,7 @@ const forgotPassword = async (req, res) => {
 
 
 
-// APi to  Reset Password
+// API to Reset Password (without hashing)
 export const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
@@ -148,9 +143,8 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid or expired token' });
     }
 
-    // Hash new password and update user
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
+    // ❌ NO hashing - directly assign password (for demo/testing only)
+    user.password = password;
 
     // Clear reset token fields
     user.resetPasswordToken = undefined;
@@ -162,6 +156,7 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 // API to get user profile data
