@@ -40,6 +40,8 @@ import swasthyasewa from './swasthasewa.svg'
 import umesh from './umesh.png'
 import neelam from './neelam.png'
 import dinesh from './Dinesh.png'
+import shreya from './shreya.png'
+
 
 
 export const assets = {
@@ -61,7 +63,7 @@ export const assets = {
     stripe_logo,
     razorpay_logo,
     swasthyasewa,
-    umesh, neelam,dinesh
+    umesh, neelam,dinesh,shreya
 }
 
 export const specialityData = [

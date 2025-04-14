@@ -19,7 +19,7 @@ const teamMembers = [
   {
     name: "Shreya Joshi",
     role: "",
-    image: assets.neelam,
+    image: assets.shreya,
     social: ["facebook", "twitter", "instagram"],
     statement: "My goal is to design an engaging and user-friendly platform that ensures accessibility and ease for all users."
   },
