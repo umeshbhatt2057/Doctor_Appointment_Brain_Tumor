@@ -16,6 +16,7 @@ import CheckTumor from './pages/CheckTumor';
 import TeamSection from './pages/OurTeam';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import ApplyDoctor from './pages/ApplyDoctor';
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
         <Route path='/team' element={<TeamSection />} />
         <Route path='/forgot-password' element={<ForgotPassword/>} />
         <Route path='/reset-password/:token' element={<ResetPassword/>} />
+        <Route path='/apply-doctor' element={<ApplyDoctor />} />
 
 
       </Routes>

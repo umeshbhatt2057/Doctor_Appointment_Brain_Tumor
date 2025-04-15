@@ -11,6 +11,7 @@ const CheckTumor = () => {
   const [tumorType, setTumorType] = useState('');
   const [confidence, setConfidence] = useState('');
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -18,6 +19,8 @@ const CheckTumor = () => {
     setResult('');
     setTumorType('');
     setConfidence('');
+    setProgress(0);
+
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -39,41 +42,60 @@ const CheckTumor = () => {
 
     try {
       setLoading(true);
+      setProgress(0);
+      setResult('');
+      setTumorType('');
+      setConfidence('');
+
+      // Animate progress from 0 to 100 over 3s
+      let progressValue = 0;
+      const interval = setInterval(() => {
+        progressValue += 1;
+        setProgress(progressValue);
+        if (progressValue >= 100) clearInterval(interval);
+      }, 40);
+
       const res = await axios.post('http://localhost:5000/api/check-tumor', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      const resText = res.data.result || 'No result returned';
-      setResult(resText);
+      // Wait 3 seconds before showing result
+      setTimeout(() => {
+        const resText = res.data.result || 'No result returned';
+        setResult(resText);
 
-      const match = resText.match(/(\w+)\s+\(Confidence:\s+([\d.]+%)\)/i);
-      if (match) {
-        const type = match[1];
-        const conf = match[2];
+        const match = resText.match(/(\w+)\s+\(Confidence:\s+([\d.]+%)\)/i);
+        if (match) {
+          const type = match[1];
+          const conf = match[2];
 
-        if (type.toLowerCase() === 'notumor') {
-          setTumorType('');
-          setConfidence(conf);
-          toast.success(`No Tumor Detected`);
+          if (type.toLowerCase() === 'notumor') {
+            setTumorType('');
+            setConfidence(conf);
+            toast.success(`No Tumor Detected`);
+          } else {
+            setTumorType(type);
+            setConfidence(conf);
+            toast.error(`Tumor Detected: ${type.toUpperCase()}`);
+          }
         } else {
-          setTumorType(type);
-          setConfidence(conf);
-          toast.error(`Tumor Detected: ${type.toUpperCase()}`);
+          setTumorType('');
+          setConfidence('');
         }
-      } else {
-        setTumorType('');
-        setConfidence('');
-      }
+
+        setLoading(false);
+        setProgress(100);
+      }, 4000);
     } catch (error) {
       console.error('Error checking tumor:', error);
       setResult('Error occurred during prediction.');
       setTumorType('');
       setConfidence('');
-      toast.error('Prediction Failed! ');
-    } finally {
+      toast.error('Prediction Failed!');
       setLoading(false);
+      setProgress(100);
     }
   };
 
@@ -142,19 +164,29 @@ const CheckTumor = () => {
                 'Check for Tumor'
               )}
             </button>
+
+            {loading && (
+              <div className="w-full mt-4">
+                <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                  <div
+                    className="bg-blue-500 h-full transition-all duration-300 ease-in-out"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+                <p className="text-center mt-2 text-sm text-gray-600">{progress}% Analyzing...</p>
+              </div>
+            )}
           </form>
         </div>
 
         <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h3 className="text-2xl font-bold mb-4 text-center">Analysis Results</h3>
-          
+
           {result ? (
             <div className={`mt-4 p-6 rounded-lg ${result.toLowerCase().includes('notumor') ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
               {tumorType ? (
                 <div className="text-center">
-                  <p className={`text-3xl font-bold ${getResultColor()} mb-4`}>
-                    Tumor Detected
-                  </p>
+                  <p className={`text-3xl font-bold ${getResultColor()} mb-4`}>Tumor Detected</p>
                   <div className="space-y-3">
                     <p className="text-xl text-gray-800">
                       <span className="font-semibold">Type:</span> {tumorType.toUpperCase()}
