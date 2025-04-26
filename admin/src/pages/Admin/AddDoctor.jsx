@@ -17,6 +17,8 @@ const AddDoctor = () => {
   const [degree, setDegree] = useState('')
   const [address1, setAddress1] = useState('')
   const [address2, setAddress2] = useState('')
+  const [nmcNo, setNmcNo] = useState('');
+
 
   const { backendUrl, aToken } = useContext(AdminContext)
 
@@ -41,6 +43,8 @@ const AddDoctor = () => {
       formData.append('speciality', speciality)
       formData.append('degree', degree)
       formData.append('address', JSON.stringify({ line1: address1, line2: address2 }))
+      formData.append('nmcNo', nmcNo);
+
 
       formData.forEach((value, key) => {
         console.log(`${key} : ${value}`)
@@ -59,6 +63,7 @@ const AddDoctor = () => {
         setDegree('')
         setAbout('')
         setFees('')
+        setNmcNo('')
       } else {
         toast.error(data.message)
       }
@@ -94,6 +99,12 @@ const AddDoctor = () => {
               <p>Doctor Email</p>
               <input onChange={(e) => setEmail(e.target.value)} value={email} className='border rounded px-3 py-2' type="email" placeholder='Email' required />
             </div>
+
+            <div className='flex-1 flex flex-col gap-1'>
+  <p>NMC Number</p>
+  <input onChange={(e) => setNmcNo(e.target.value)} value={nmcNo} className='border rounded px-3 py-2' type="text" placeholder='NMC Number' required />
+</div>
+
 
             <div className='flex-1 flex flex-col gap-1'>
               <p>Doctor Password</p>

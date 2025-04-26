@@ -2,64 +2,51 @@ import doctorModel from "../models/doctorModel.js"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import appointmentModel from "../models/appointmentModel.js"
+import { v2 as cloudinary } from 'cloudinary'
 
 const changeAvailablity = async (req, res) => {
-
   try {
-
     const { docId } = req.body
     const docData = await doctorModel.findById(docId)
     await doctorModel.findByIdAndUpdate(docId, { available: !docData.available })
-    res.json({ success: true, message: 'Availablity Changed ' })
-
+    res.json({ success: true, message: 'Availability Changed' })
   } catch (error) {
     console.log(error)
     res.json({ success: false, message: error.message })
   }
-
 }
 
 const doctorList = async (req, res) => {
-
   try {
-
     const doctors = await doctorModel.find({}).select(['-password', '-email'])
     res.json({ success: true, doctors })
-
   } catch (error) {
     console.log(error)
     res.json({ success: false, message: error.message })
   }
-
 }
 
-//API for doctor login
+// API for doctor login
 const loginDoctor = async (req, res) => {
   try {
-
     const { email, password } = req.body
     const doctor = await doctorModel.findOne({ email })
 
     if (!doctor) {
-      return res.json({ success: false, message: 'Invalid credintials' })
+      return res.json({ success: false, message: 'Invalid credentials' })
     }
 
-    const isMatch = await bcrypt.compare(password, doctor.password)
-
-    if (isMatch) {
-
+    // Now directly compare plain text
+    if (password === doctor.password) {
       const token = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET)
-
       res.json({ success: true, token })
     } else {
-      res.json({ success: false, message: 'Invalid credintials' })
-
+      res.json({ success: false, message: 'Invalid credentials' })
     }
 
   } catch (error) {
     console.log(error)
     res.json({ success: false, message: error.message })
-
   }
 }
 
@@ -179,21 +166,34 @@ const doctorProfile = async (req, res) => {
   }
 }
 
-// API to Edit doctor profile for Doctor Panel
+// API to update doctor profile (only image, fee, address, available)
 const updateDoctorProfile = async (req, res) => {
   try {
-
     const { docId, fees, address, available } = req.body
-    const profileData = await doctorModel.findById(docId).select('-password')
+    const imageFile = req.file
 
-    await doctorModel.findByIdAndUpdate(docId, { fees, address, available })
+    // Only update allowed fields
+    const updateFields = {
+      fees,
+      address: address ? JSON.parse(address) : undefined,
+      available,
+    }
 
-    res.json({ success: true, message: 'Profile Updated Successfully' })
+    // Remove undefined fields (if address not sent)
+    Object.keys(updateFields).forEach(key => updateFields[key] === undefined && delete updateFields[key])
 
+    await doctorModel.findByIdAndUpdate(docId, updateFields)
+
+    // If image uploaded, upload and update
+    if (imageFile) {
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
+      const imageURL = imageUpload.secure_url
+      await doctorModel.findByIdAndUpdate(docId, { image: imageURL })
+    }
+
+    res.json({ success: true, message: 'Profile Updated' })
   } catch (error) {
-    console.log(error)
     res.json({ success: false, message: error.message })
-
   }
 }
 

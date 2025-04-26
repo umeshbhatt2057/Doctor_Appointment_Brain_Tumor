@@ -1,28 +1,58 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets_frontend/assets'
 
 const Header = () => {
+  const navigate = useNavigate();
+
+  const handleUploadClick = () => {
+    navigate('/check-tumor');
+  };
+
   return (
-    <div className='flex flex-col md:flex-row flex-wrap bg-primary rounded-lg px-6 md:px-10 lg:px-20'>
-
-      {/* ---------- Left Side ---------- */}
-      <div className='md:w-1/2 flex flex-col items-start justify-center gap-4 py-10 m-auto md:py-[10vw] md:mb-[30px]'>
-        <p className='text-3xl md:text-4xl lg:text-5xl text-white font-semibold leading-tight md:leading-tight lg:leading-tight'>Book Appointment <br /> With Trusted Doctors</p>
-        <div className='flex flex-col md:flex-row items-center gap-3 text-white text-sm font-light'>
-          <img className='w-28' src={assets.group_profiles} alt="" />
-          <p>Simply browse through our extensive list of trusted doctors, <br className='hidden sm:block' /> schedule your appointment hassle-free.</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#4d7cff]">
+      <div className="flex flex-col md:flex-row items-center w-full max-w-6xl px-6 py-16">
+        {/* Left Side */}
+        <div className="md:w-1/2 flex flex-col items-start justify-center gap-6">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
+            Brain Tumor <br /> Detection System
+          </h1>
+          <p className="text-lg text-white/90 font-light mb-4">
+            Simply upload your brain scan image and let our advanced system detect brain tumors quickly and accurately.
+          </p>
+          <div className="flex items-center gap-2 mb-6">
+            <img className="w-12 h-12 rounded-full object-cover border-2 border-white" src={assets.umesh} alt="Profile 1" />
+            <img className="w-12 h-12 rounded-full object-cover border-2 border-white -ml-4" src={assets.neelam} alt="Profile 2" />
+          </div>
+          <button
+            onClick={handleUploadClick}
+            className="flex items-center gap-2 bg-white px-8 py-4 rounded-full text-gray-800 text-lg font-semibold shadow hover:bg-blue-100 transition-all duration-300"
+          >
+            Upload Image
+            <span className="ml-2">
+              <img className="w-5" src={assets.arrow_icon} alt="Arrow Icon" />
+            </span>
+          </button>
         </div>
-        <a className='flex items-center gap-2 bg-white px-8 py-3 rounded-full text-gray-600 text-sm m-auto md:m-0 hover:scale-105 transition-all duration-300' href="#speciality">
-          Book appointment
-          <img className='w-3' src={assets.arrow_icon} alt="" />
-        </a>
+        {/* Right Side */}
+        <div className="md:w-1/2 flex items-center justify-center relative mt-12 md:mt-0">
+          {/* MRI Image */}
+          <div >
+            <img
+              src={assets.brain}
+              alt="MRI Scan"
+              className="w-72 h-72 rounded-full object-cover"
+            />
+          </div>
+          {/* Doctor Image */}
+          <img
+            src={assets.header_img}
+            alt="Doctor"
+            className="absolute right-0 bottom-0  w-52 md:w-64 z-20"
+            style={{ transform: 'translateY(100%)' }}
+          />
+        </div>
       </div>
-
-      {/* ----------Right Side ---------- */}
-      <div className='md:w-1/2 relative'>
-        <img className='w-full md:absolute bottom-0 h-auto rounded-lg' src={assets.header_img} alt="" />
-      </div>
-
     </div>
   )
 }

@@ -7,28 +7,29 @@ const teamMembers = [
     role: "",
     image: assets.dinesh,
     social: ["facebook", "twitter", "instagram"],
-    statement: "Ensuring SwasthyaSewa is reliable, secure, and bug-free is my top priority, making sure patients have a seamless experience."
+    statement: "SwasthyaSewa connects patients with trusted doctors quickly and easily, ensuring timely healthcare access from the comfort of their homes."
+
   },
   {
     name: "Neelam Dhami",
     role: "",
     image: assets.neelam,
     social: ["facebook", "twitter", "instagram"],
-    statement: "I focus on building an intuitive interface, allowing users to navigate effortlessly while booking appointments and checking reports."
+    statement: "SwasthyaSewa empowers individuals to take control of their health by offering reliable services, verified doctors, and hassle-free virtual appointments."
   },
   {
     name: "Shreya Joshi",
     role: "",
     image: assets.shreya,
     social: ["facebook", "twitter", "instagram"],
-    statement: "My goal is to design an engaging and user-friendly platform that ensures accessibility and ease for all users."
+    statement: "At SwasthyaSewa, we prioritize patient convenience, delivering a fast, secure, and efficient healthcare experience that patients can trust every day."
   },
   {
     name: "Umesh Bhatt",
     role: "CEO",
     image: assets.umesh,
     social: ["facebook", "twitter", "instagram"],
-    statement: "Developing SwasthyaSewa has been a fulfilling journey, integrating AI for MRI scans and real-time doctor consultations."
+    statement:"SwasthyaSewa is dedicated to transforming healthcare access by offering a secure, reliable platform that seamlessly connects patients with trusted medical professionals."
   },
 ];
 
@@ -50,11 +51,13 @@ export default function TeamSection() {
             />
             <h3 className="text-xl font-semibold mt-4">{member.name}</h3>
 
+            <p className="mt-3 font-semibold">{member.role}</p>
+
             <p className="text-gray-600 mt-2 text-sm">
               {member.statement}
             </p>
 
-            <p className="mt-3 font-bold text-gray-700">{member.role}</p>
+           
             <div className="flex justify-center gap-3 mt-4">
               {member.social.map((platform, i) => (
                 <a key={i} href="#" className="text-gray-600 hover:text-orange-500 text-lg">
