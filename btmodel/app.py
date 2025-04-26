@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load the trained model
-MODEL_PATH = 'model.h5'  # Or 'model.keras'
+MODEL_PATH = 'best_model.h5'  # Or 'model.keras'
 model = load_model(MODEL_PATH)
 
 # ✅ Load class names from JSON
@@ -22,7 +22,7 @@ with open('class_names.json', 'r') as f:
 # Preprocess uploaded image
 def preprocess_image(image_bytes):
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    image = image.resize((128, 128))  # Match your model’s input
+    image = image.resize((224, 224))  # Match your model’s input
     image = img_to_array(image)
     image = image / 255.0
     image = np.expand_dims(image, axis=0)
