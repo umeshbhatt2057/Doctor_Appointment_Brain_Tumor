@@ -6,6 +6,25 @@ const TopDoctors = () => {
   const navigate = useNavigate();
   const { doctors } = useContext(AppContext);
 
+  // Helper to render stars for average rating (including half star)
+  const renderStars = (avgRating) => {
+    const rating = typeof avgRating === 'number' && avgRating > 0 ? avgRating : 5;
+    const fullStars = Math.floor(rating);
+    const halfStar = rating - fullStars >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+    return (
+      <span className="flex items-center">
+        {[...Array(fullStars)].map((_, i) => (
+          <span key={'full' + i} style={{ color: '#ffc107', fontSize: '1.2rem' }}>★</span>
+        ))}
+        {halfStar && <span style={{ color: '#ffc107', fontSize: '1.2rem' }}>☆</span>}
+        {[...Array(emptyStars)].map((_, i) => (
+          <span key={'empty' + i} style={{ color: '#e4e5e9', fontSize: '1.2rem' }}>★</span>
+        ))}
+      </span>
+    );
+  };
+
   return (
     <div className='flex flex-col items-center gap-4 my-16 text-gray-900 md:mx-10'>
       <h1 className='text-3xl font-medium'>Top Doctors to Book</h1>
@@ -39,7 +58,13 @@ const TopDoctors = () => {
               <p className='text-gray-900 text-lg font-semibold text-center'>{item.name}</p>
               <p className='text-red-600 font-bold text-sm'>NMC No :    {item.nmcNo}</p>
               <p className='text-blue-500 text-sm text-center mt-1'>{item.speciality}</p>
-              
+              {/* Only stars and average rating */}
+              <div className="flex items-center gap-1 mt-2">
+                {renderStars(item.rating)}
+                <span className="ml-2 text-sm text-gray-700 font-semibold">
+                  {typeof item.rating === 'number' && item.rating > 0 ? item.rating.toFixed(1) : '5.0'}
+                </span>
+              </div>
             </div>
           </div>
         ))}

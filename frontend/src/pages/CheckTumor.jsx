@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaBrain, FaCalendarAlt, FaCheckCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
 
 const tumorSymptoms = {
   glioma: [
@@ -40,6 +41,15 @@ const CheckTumor = () => {
   const [progress, setProgress] = useState(0);
 
   const navigate = useNavigate();
+  const { token } = useContext(AppContext);
+
+  // Authentication check
+  useEffect(() => {
+    if (!token) {
+      toast.warn('Please login to check for brain tumors');
+      navigate('/login?redirect=/check-tumor', { replace: true });
+    }
+  }, [token, navigate]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];

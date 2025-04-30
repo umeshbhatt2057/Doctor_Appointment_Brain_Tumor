@@ -1,24 +1,27 @@
-import  { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Login = () => {
   const { backendUrl, token, setToken } = useContext(AppContext);
   const navigate = useNavigate();
-  const [state, setState] = useState('Login'); // Default view is now Login
+  const location = useLocation();
 
+  const [state, setState] = useState('Login'); // "Login" or "Sign Up"
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  // Get redirect path from query string, e.g. /login?redirect=/check-tumor
+  const params = new URLSearchParams(location.search);
+  const redirectPath = params.get('redirect');
+
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -33,7 +36,13 @@ const Login = () => {
       if (data.success) {
         localStorage.setItem('token', data.token);
         setToken(data.token);
-        navigate('/');
+
+        // Redirect to intended page if present, else home
+        if (redirectPath) {
+          navigate(redirectPath, { replace: true });
+        } else {
+          navigate('/', { replace: true });
+        }
       } else {
         toast.error(data.message || 'Something went wrong.');
       }
@@ -44,15 +53,21 @@ const Login = () => {
     }
   };
 
+  // If already logged in, redirect to home (or intended page)
   useEffect(() => {
     if (token) {
-      navigate('/');
+      if (redirectPath) {
+        navigate(redirectPath, { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
     }
-  }, [token, navigate]);
+    // eslint-disable-next-line
+  }, [token]);
 
   return (
     <form onSubmit={onSubmitHandler} className='min-h-[80vh] flex items-center'>
-      <div className='flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-zinc-600 text-sm shadow-lg'>
+      <div className='flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-zinc-600 text-sm shadow-lg bg-white'>
         <p className='text-2xl font-semibold'>{state === 'Sign Up' ? 'Create Account' : 'Login'}</p>
         <p>Please {state === 'Sign Up' ? 'sign up' : 'log in'} to book an appointment</p>
 

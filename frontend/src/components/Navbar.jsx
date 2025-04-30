@@ -28,10 +28,13 @@ const Navbar = () => {
           <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
         </NavLink>
 
-        <NavLink to='/check-tumor'>
-          <li className='py-1'>CHECK TUMOR</li>
-          <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
-        </NavLink>
+        {token && (
+          <NavLink to='/check-tumor'>
+            <li className='py-1'>CHECK TUMOR</li>
+            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden' />
+          </NavLink>
+        )}
+
 
         <NavLink to='/about'>
           <li className='py-1'>ABOUT</li>
@@ -75,6 +78,13 @@ const Navbar = () => {
             <NavLink onClick={() => setShowMenu(false)} to='/doctors'><p className='px-3 py-3 rounded inline-block'>ALL DOCTORS</p></NavLink>
             <NavLink onClick={() => setShowMenu(false)} to='/about'><p className='px-3 py-3 rounded inline-block'>ABOUT</p></NavLink>
             <NavLink onClick={() => setShowMenu(false)} to='/contact'><p className='px-3 py-3 rounded inline-block'>CONTACT</p></NavLink>
+
+            {token && (
+              <NavLink onClick={() => setShowMenu(false)} to='/check-tumor'>
+                <p className='px-3 py-3 rounded inline-block'>CHECK TUMOR</p>
+              </NavLink>
+            )}
+
           </ul>
         </div>
 

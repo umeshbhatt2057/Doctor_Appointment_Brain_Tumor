@@ -15,6 +15,7 @@ import DoctorDashboard from './pages/Doctor/DoctorDashboard';
 import DoctorAppointments from './pages/Doctor/DoctorAppointments';
 import DoctorProfile from './pages/Doctor/DoctorProfile';
 import CheckTumor from './pages/Doctor/CheckTumor';
+import AdminFeedbackModeration from './pages/Admin/Feedback';
 
 
 const App = () => {
@@ -38,6 +39,10 @@ const App = () => {
           <Route path='/all-appointments' element={<AllAppointments />} />
           <Route path='/add-doctor' element={<AddDoctor />} />
           <Route path='/doctor-list' element={<DoctorsList />} />
+          <Route path='/' element={<DoctorsList />} />
+          <Route path='/admin-feedback-moderation' element={<AdminFeedbackModeration />} />
+
+
 
           
           {/* Doctor Route */}

@@ -18,13 +18,64 @@ const changeAvailablity = async (req, res) => {
 
 const doctorList = async (req, res) => {
   try {
-    const doctors = await doctorModel.find({}).select(['-password', '-email'])
-    res.json({ success: true, doctors })
+    const doctors = await doctorModel.find({}).select('-password')
+    const doctorIds = doctors.map(doc => doc._id.toString())
+
+    const feedbacks = await appointmentModel.aggregate([
+      {
+        $addFields: {
+          docIdStr: { $toString: "$docId" }
+        }
+      },
+      {
+        $match: {
+          docIdStr: { $in: doctorIds },
+          feedbackApproved: true,
+          rating: { $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: '$docIdStr',
+          avgRating: { $avg: '$rating' },
+          count: { $sum: 1 }
+        }
+      }
+    ])
+
+    const ratingMap = {}
+    feedbacks.forEach(fb => {
+      ratingMap[fb._id] = { avgRating: fb.avgRating, count: fb.count }
+    })
+
+    let doctorsWithRating = doctors.map(doc => {
+      const ratingData = ratingMap[doc._id.toString()]
+      return {
+        ...doc.toObject(),
+        rating: ratingData ? ratingData.avgRating : null,
+        ratingCount: ratingData ? ratingData.count : 0
+      }
+    })
+
+    // Sort by rating descending, then by ratingCount descending (optional)
+    doctorsWithRating = doctorsWithRating.sort((a, b) => {
+      // If both have ratings, sort by rating
+      if (b.rating !== a.rating) {
+        // If rating is null, treat as lowest
+        if (b.rating === null) return -1;
+        if (a.rating === null) return 1;
+        return b.rating - a.rating;
+      }
+      // If ratings are equal or both null, sort by review count
+      return (b.ratingCount || 0) - (a.ratingCount || 0);
+    });
+
+    res.json({ success: true, doctors: doctorsWithRating })
   } catch (error) {
-    console.log(error)
     res.json({ success: false, message: error.message })
   }
 }
+
 
 // API for doctor login
 const loginDoctor = async (req, res) => {
@@ -198,6 +249,37 @@ const updateDoctorProfile = async (req, res) => {
 }
 
 
+// API: Get all approved feedback for a doctor
+const getDoctorFeedbacks = async (req, res) => {
+  try {
+    const { docId } = req.params
+    const feedbacks = await appointmentModel.find({
+      docId,
+      feedback: { $ne: '' },
+      feedbackApproved: true
+    }).select('feedback rating userData slotDate slotTime anonymousFeedback feedbackSubmittedAt')
+      .sort({ feedbackSubmittedAt: -1 });
+    res.json({ success: true, feedbacks })
+  } catch (err) {
+    res.json({ success: false, message: err.message })
+  }
+}
+
+// api to count completed appointments
+const completedAppointmentsCount = async (req, res) => {
+  try {
+    const { docId } = req.params;
+    const count = await appointmentModel.countDocuments({ docId, isCompleted: true });
+    res.json({ success: true, count });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+
+
+
 
 export {
   changeAvailablity,
@@ -208,5 +290,7 @@ export {
   appointmentCancel,
   doctorDashboard,
   doctorProfile,
-  updateDoctorProfile
+  updateDoctorProfile,
+  getDoctorFeedbacks,
+  completedAppointmentsCount
 }

@@ -1,5 +1,5 @@
 import express from 'express'
-import { appointmentCancel, appointmentComplete, appointmentsDoctor, doctorDashboard, doctorList,doctorProfile,loginDoctor, updateDoctorProfile } from '../controllers/doctorController.js'
+import { appointmentCancel, appointmentComplete, appointmentsDoctor, completedAppointmentsCount, doctorDashboard, doctorList,doctorProfile,getDoctorFeedbacks,loginDoctor, updateDoctorProfile } from '../controllers/doctorController.js'
 import authDoctor from '../middlewares/authDoctor.js'
 import upload from '../middlewares/multer.js'
 
@@ -14,6 +14,11 @@ doctorRouter.get('/dashboard',authDoctor,doctorDashboard)
 doctorRouter.get('/profile', authDoctor, doctorProfile)
 
 doctorRouter.post('/update-profile', upload.single('image'),authDoctor, updateDoctorProfile)
+
+doctorRouter.get('/feedbacks/:docId', getDoctorFeedbacks)
+
+doctorRouter.get('/completed-appointments/:docId', completedAppointmentsCount);
+
 
 
 export default doctorRouter

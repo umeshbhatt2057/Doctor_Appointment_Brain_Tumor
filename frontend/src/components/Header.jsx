@@ -1,12 +1,20 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { assets } from '../assets/assets_frontend/assets'
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { assets } from '../assets/assets_frontend/assets';
+import { AppContext } from '../context/AppContext';
+import { toast } from 'react-toastify';
 
 const Header = () => {
   const navigate = useNavigate();
+  const { token } = useContext(AppContext);
 
   const handleUploadClick = () => {
-    navigate('/check-tumor');
+    if (token) {
+      navigate('/check-tumor');
+    } else {
+     
+      navigate('/login?redirect=/check-tumor');
+    }
   };
 
   return (
@@ -37,7 +45,7 @@ const Header = () => {
         {/* Right Side */}
         <div className="md:w-1/2 flex items-center justify-center relative mt-12 md:mt-0">
           {/* MRI Image */}
-          <div >
+          <div>
             <img
               src={assets.brain}
               alt="MRI Scan"
@@ -48,13 +56,13 @@ const Header = () => {
           <img
             src={assets.header_img}
             alt="Doctor"
-            className="absolute right-0 bottom-0  w-52 md:w-64 z-20"
+            className="absolute right-0 bottom-0 w-52 md:w-64 z-20"
             style={{ transform: 'translateY(100%)' }}
           />
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

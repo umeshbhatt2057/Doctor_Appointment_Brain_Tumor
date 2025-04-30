@@ -33,10 +33,16 @@ const Sidebar = () => {
             <img src={assets.people_icon} alt="" />
             <p className='hidden md:block'>Doctors List</p>
           </NavLink>
+
+          {/* Feedback Moderation link for admin */}
+          <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#f2f3ff] border-r-4 border-primary' : ''}`} to={'/admin-feedback-moderation'}>
+            <img src={assets.appointment_icon} alt="" />
+            <p className='hidden md:block'>Feedback Moderation</p>
+          </NavLink>
         </ul>
       }
 
-{
+      {
         dToken &&
         <ul className='text-[#515151] mt-5'>
           <NavLink className={({ isActive }) => `flex items-center gap-3 py-3.5 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#f2f3ff] border-r-4 border-primary' : ''}`} to={'/doctor-dashboard'}>
@@ -49,18 +55,15 @@ const Sidebar = () => {
             <p className='hidden md:block'>Appointments</p>
           </NavLink>
 
-         
-
           <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#f2f3ff] border-r-4 border-primary' : ''}`} to={'/doctor-profile'}>
             <img src={assets.people_icon} alt="" />
             <p className='hidden md:block'>Profile</p>
           </NavLink>
 
           <NavLink className={({isActive}) => `flex items-center gap-3 py-3.5 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#f2f3ff] border-r-4 border-primary' : ''}`} to={'/check-tumor'}>
-  <img src={assets.checkTumor} alt="" className="w-8 h-8" />
-  <p className='hidden md:block'>Check Tumor</p>
-</NavLink>
-
+            <img src={assets.checkTumor} alt="" className="w-8 h-8" />
+            <p className='hidden md:block'>Check Tumor</p>
+          </NavLink>
         </ul>
       }
     </div>

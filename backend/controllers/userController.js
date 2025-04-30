@@ -264,20 +264,15 @@ const bookAppointment = async (req, res) => {
 
 // API to get user appointments for frontend my-appointments page
 const listAppointment = async (req, res) => {
-
   try {
-
     const { userId } = req.body
     const appointments = await appointmentModel.find({ userId })
-
     res.json({ success: true, appointments })
-
   } catch (error) {
-    console.log(error)
     res.json({ success: false, message: error.message })
   }
-
 }
+
 
 // API to cancel appointment
 const cancelAppointment = async (req, res) => {
@@ -312,6 +307,71 @@ const cancelAppointment = async (req, res) => {
 
 }
 
+
+// API to submit feedback and rating
+const submitFeedback = async (req, res) => {
+  try {
+    const { userId, appointmentId, feedback, rating, anonymousFeedback } = req.body;
+
+    const appointment = await appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      return res.json({ success: false, message: 'Appointment not found' });
+    }
+    if (appointment.userId !== userId) {
+      return res.json({ success: false, message: 'Unauthorized' });
+    }
+    if (!appointment.isCompleted) {
+      return res.json({ success: false, message: 'Feedback allowed only after completion' });
+    }
+    if (appointment.feedback || appointment.rating) {
+      return res.json({ success: false, message: 'Feedback already submitted' });
+    }
+
+    appointment.feedback = feedback;
+    appointment.rating = rating;
+    appointment.anonymousFeedback = !!anonymousFeedback;
+    appointment.feedbackSubmittedAt = new Date(); // <-- set timestamp
+    await appointment.save();
+
+    res.json({ success: true, message: 'Feedback submitted' });
+  } catch (error) {
+    res.json({ success: false, message: error.message })
+  }
+}
+
+
+// POST /api/user/edit-feedback
+const editFeedback = async (req, res) => {
+  try {
+    const { appointmentId, feedback, rating, anonymousFeedback } = req.body;
+
+    const appointment = await appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      return res.json({ success: false, message: 'Appointment not found' });
+    }
+    if (!appointment.isCompleted) {
+      return res.json({ success: false, message: 'Feedback can only be edited after completion' });
+    }
+
+    appointment.feedback = feedback;
+    appointment.rating = rating;
+    appointment.anonymousFeedback = !!anonymousFeedback;
+    appointment.feedbackApproved = false;
+    appointment.feedbackRejected = false;
+    appointment.feedbackSubmittedAt = new Date(); // <-- update timestamp
+    await appointment.save();
+
+    res.json({ success: true, message: 'Feedback updated ' });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+
+
+
+
 export {
   registerUser,
   loginUser,
@@ -320,5 +380,5 @@ export {
   updateProfile,
   bookAppointment,
   listAppointment,
-  cancelAppointment
+  cancelAppointment,submitFeedback,editFeedback
 }

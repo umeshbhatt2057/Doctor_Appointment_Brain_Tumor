@@ -11,11 +11,11 @@ const addDoctor = async (req, res) => {
 
   try {
 
-    const { name, email, password, speciality, degree, experience, about, fees, address ,  nmcNo} = req.body
+    const { name, email, password, speciality, degree, experience, about, fees, address, nmcNo } = req.body
     const imageFile = req.file
 
     // checking for all data to add doctor
-    if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !address  || !nmcNo) {
+    if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !address || !nmcNo) {
       return res.json({ success: false, message: 'Missing Details' })
     }
 
@@ -36,8 +36,8 @@ const addDoctor = async (req, res) => {
     }
 
     // hashing doctor password
-   // const salt = await bcrypt.genSalt(10)
-   // const hashedPassword = await bcrypt.hash(password, salt)
+    // const salt = await bcrypt.genSalt(10)
+    // const hashedPassword = await bcrypt.hash(password, salt)
 
     // upload image to cloudinary
     const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: 'image' })
@@ -79,20 +79,60 @@ const loginAdmin = async (req, res) => {
   }
 }
 
-// API to get all doctors list for admin panel
+// API to get all doctors list for admin panel (and for frontend doctor list)
 const allDoctors = async (req, res) => {
-
   try {
-
     const doctors = await doctorModel.find({}).select('-password')
-    res.json({ success: true, doctors })
+const doctorIds = doctors.map(doc => doc._id.toString())
 
+const feedbacks = await appointmentModel.aggregate([
+  // Convert docId to string if it's not already
+  {
+    $addFields: {
+      docIdStr: { $toString: "$docId" }
+    }
+  },
+  {
+    $match: {
+      docIdStr: { $in: doctorIds },
+      feedbackApproved: true,
+      rating: { $ne: null }
+    }
+  },
+  {
+    $group: {
+      _id: '$docIdStr',
+      avgRating: { $avg: '$rating' },
+      count: { $sum: 1 }
+    }
+  }
+])
+
+
+    // Map docId to rating data
+    const ratingMap = {}
+    feedbacks.forEach(fb => {
+      ratingMap[fb._id] = { avgRating: fb.avgRating, count: fb.count }
+    })
+
+    // Attach rating and count to each doctor
+    const doctorsWithRating = doctors.map(doc => {
+      const ratingData = ratingMap[doc._id.toString()]
+      return {
+        ...doc.toObject(),
+        rating: ratingData ? ratingData.avgRating : null,
+        ratingCount: ratingData ? ratingData.count : 0
+      }
+    })
+
+    res.json({ success: true, doctors: doctorsWithRating })
   } catch (error) {
     console.log(error)
     res.json({ success: false, message: error.message })
   }
-
 }
+
+
 
 // API to get all appointments list
 const appointmentsAdmin = async (req, res) => {
@@ -157,9 +197,56 @@ const adminDashboard = async (req, res) => {
 
   } catch (error) {
     console.log(error)
-    res.json({ success: false, message: error.message})
+    res.json({ success: false, message: error.message })
   }
 
 }
-      
-export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard }
+
+
+// Get all feedback pending approval
+const getPendingFeedback = async (req, res) => {
+  try {
+    const pending = await appointmentModel.find({
+      feedback: { $ne: '' },
+      feedbackApproved: false,
+      feedbackRejected: false
+    })
+    res.json({ success: true, feedbacks: pending })
+  } catch (error) {
+    res.json({ success: false, message: error.message })
+  }
+}
+
+// Approve feedback
+const approveFeedback = async (req, res) => {
+  try {
+    const { appointmentId } = req.body
+    await appointmentModel.findByIdAndUpdate(appointmentId, { feedbackApproved: true, feedbackRejected: false })
+    res.json({ success: true, message: 'Feedback approved' })
+  } catch (error) {
+    res.json({ success: false, message: error.message })
+  }
+}
+
+// Reject feedback
+const rejectFeedback = async (req, res) => {
+  try {
+    const { appointmentId } = req.body
+    await appointmentModel.findByIdAndUpdate(appointmentId, { feedbackApproved: false, feedbackRejected: true })
+    res.json({ success: true, message: 'Feedback rejected' })
+  } catch (error) {
+    res.json({ success: false, message: error.message })
+  }
+}
+
+export {
+  addDoctor,
+  loginAdmin,
+  allDoctors,
+  appointmentsAdmin,
+  appointmentCancel,
+  adminDashboard,
+  getPendingFeedback,
+  approveFeedback,
+  rejectFeedback
+}
