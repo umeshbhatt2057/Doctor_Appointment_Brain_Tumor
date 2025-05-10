@@ -186,7 +186,7 @@ const Appointment = () => {
             </span>
             {/* Completed appointments count */}
             {completedCount !== null && (
-              <span className="ml-4 text-xs text-green-600 font-semibold">
+              <span className="ml-4 text-lg text-green-600 font-semibold">
                 {completedCount} completed appointment{completedCount !== 1 ? 's' : ''}
               </span>
             )}
