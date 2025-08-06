@@ -29,7 +29,7 @@ const DoctorsList = () => {
             <div className="flex-1 w-full flex flex-col justify-between px-5 py-4">
               <div>
                 <p className="text-lg font-bold text-neutral-800 mb-1">
-                  Dr. {item.name}
+                   {item.name}
                 </p>
                 <p className="text-gray-500 text-sm mb-3">{item.speciality}</p>
               </div>

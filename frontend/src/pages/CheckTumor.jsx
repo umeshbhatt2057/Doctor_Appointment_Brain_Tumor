@@ -43,12 +43,14 @@ const CheckTumor = () => {
   const navigate = useNavigate();
   const { token } = useContext(AppContext);
 
-  // Authentication check
+  // Authentication check on mount
   useEffect(() => {
     if (!token) {
       toast.warn('Please login to check for brain tumors');
       navigate('/login?redirect=/check-tumor', { replace: true });
     }
+    // Show the MRI upload warning as a toast notification
+    toast.info('⚠️ Please upload only MRI images for prediction. Other images will not be predicted.', { autoClose: 5000 });
   }, [token, navigate]);
 
   const handleImageChange = (e) => {
@@ -66,19 +68,20 @@ const CheckTumor = () => {
     }
   };
 
-  // Animate progress bar
+  // Animate progress bar while loading
   useEffect(() => {
     if (loading) {
       let count = 0;
       const interval = setInterval(() => {
-        count += 2; // Increment
+        count += 2;
         setProgress((prev) => Math.min(count, 100));
         if (count >= 100) clearInterval(interval);
-      }, 100); // Runs every 100ms => 2.5 * (1000 / 100) = 25 steps => ~4s total
+      }, 100);
       return () => clearInterval(interval);
+    } else {
+      setProgress(0);
     }
   }, [loading]);
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,7 +101,7 @@ const CheckTumor = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // Wait 3 seconds for progress animation to complete
+      // Wait 4 seconds for progress animation before showing result
       setTimeout(() => {
         const resText = res.data.result || 'No result returned';
         setResult(resText);
@@ -153,6 +156,14 @@ const CheckTumor = () => {
             <FaBrain /> Brain Tumor Detection
           </h2>
           <label className="block mb-3 text-gray-700 font-medium">Upload MRI Image</label>
+
+          {/* Persistent Warning Message */}
+          <div className="mb-2">
+            <p className="text-yellow-600 text-sm font-semibold">
+              ⚠️ Please upload an MRI image only for prediction. Predictions on non-MRI images may not be accurate.
+            </p>
+          </div>
+
           <input
             type="file"
             accept="image/*"
